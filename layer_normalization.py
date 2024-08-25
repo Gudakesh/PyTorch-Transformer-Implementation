@@ -1,13 +1,13 @@
 import torch
 
 class LayerNormalization(torch.nn.Module):
-   def __init__(self, eps: float = 10**-6):
+   def __init__(self, features: int, eps: float = 10**-6):
       super().__init__()
       self.eps = eps
       # multiplicative term for doing normalization
-      self.alpha = torch.nn.Parameter(torch.ones(1))
+      self.alpha = torch.nn.Parameter(torch.ones(features))
       # additive term for doing normalization
-      self.beta = torch.nn.Parameter(torch.zeros(1))
+      self.beta = torch.nn.Parameter(torch.zeros(features))
    
    def forward(self, x: torch.tensor) -> torch.tensor:
       mean = torch.mean(input = x, dim = -1, keepdim = True)
