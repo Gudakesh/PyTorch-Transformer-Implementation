@@ -2,11 +2,11 @@ import torch
 import math
 
 def scalar_dot_product_attention(
-      query: torch.tensor, 
-      key: torch.tensor,
-      value: torch.tensor,
-      mask: torch.tensor = None,
-      dropout: torch.nn.Dropout = None
+   query: torch.tensor, 
+   key: torch.tensor,
+   value: torch.tensor,
+   mask: torch.tensor = None,
+   dropout: torch.nn.Dropout = None
 ):
    # query, key, value : Shape :: (batch_size, num_heads, seq_len, d_k)
    # mask : shape :: (batch_size, num_heads, seq_len, seq_len)
@@ -16,7 +16,7 @@ def scalar_dot_product_attention(
    # (batch_size, num_heads, seq_len, d_k) * (batch_size, num_heads, d_k, seq_len) --> (batch_size, num_heads, seq_len, seq_len)
    attention_scores = torch.matmul(query, torch.transpose(key, -2, -1)) / math.sqrt(d_k)
 
-   # apply mask(if given) before doing softmax (used in inference)
+   # apply mask(if given) before doing softmax (used in inference in decoder, and for hiding padding words in an input sequence in encoder)
    if mask is not None:
       attention_scores = attention_scores.masked_fill_(mask==0, -1e9)
    

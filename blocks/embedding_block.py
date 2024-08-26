@@ -12,4 +12,5 @@ class Embeddings(torch.nn.Module):
       )
    
    def forward(self, x: torch.tensor) -> torch.tensor:
+      # (batch_size, seq_len) --> (batch_size, seq_len, d_model)
       return self.embed(x) * math.sqrt(self.d_model)
