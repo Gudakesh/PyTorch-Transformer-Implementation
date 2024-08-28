@@ -22,7 +22,10 @@ class DecoderLayer(torch.nn.Module):
       self.add_and_norm_block_3 = ResidualConnection(size = self.size, dropout = dropout)
    
    def forward(self, x: torch.tensor, encoder_output: torch.tensor, encoder_mask: torch.tensor, decoder_mask: torch.tensor):
-      x = self.add_and_norm_block_1(x, self.self_attention_block(q = x, k = x, v = x, mask = decoder_mask))
-      x = self.add_and_norm_block_2(x, self.self_attention_block(q = x, k = encoder_output, v = encoder_output, mask = encoder_mask))
-      x = self.add_and_norm_block_3(x, self.feed_forward_block(x))
+      # need to use lambda function to redirect callable inside ResidualConnection class, as it takes only single argument, and we need to use multiple input arguments for our function.
+      # so using lambda to map SubLayer(x) -> SubLayer(x, x, x, mask)
+      x = self.add_and_norm_block_1(x, lambda x: self.self_attention_block(q = x, k = x, v = x, mask = decoder_mask))
+      x = self.add_and_norm_block_2(x, lambda x: self.self_attention_block(q = x, k = encoder_output, v = encoder_output, mask = encoder_mask))
+      # no need to use lambda for redirection in FeedForward sublayer, as it only takes single input
+      x = self.add_and_norm_block_3(x, self.feed_forward_block)
       return x
